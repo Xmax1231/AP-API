@@ -69,6 +69,10 @@ def get_coursetables(year, semester):
     classes = cache.ap_query(
         s, "ag222", {"arg01": year, "arg02": semester}, g.username)
 
+    # No course in this year/semester
+    if not classes:
+        return jsonify(message="學生目前無選課資料", coursetables={})
+
     coursetables = {}
     for c in classes:
         weekday = weekdays[c["date"]["weekday"]]
@@ -77,7 +81,19 @@ def get_coursetables(year, semester):
 
         coursetables[weekday].append(c)
 
-    return jsonify(coursetables)
+    return jsonify(message="", coursetables=coursetables)
+
+
+@route('/ap/users/scores/<int:year>/<int:semester>')
+@auth.login_required
+def get_score(year, semester):
+    # Restore cookies
+    s = stateless_auth.get_requests_session_with_cookies()
+
+    scores = cache.ap_query(
+        s, "ag008", {"arg01": year, "arg02": semester, "arg03": g.username}, g.username)
+
+    return jsonify(scores)
 
 
 @route('/ap/samples/coursetables/normal')
@@ -97,12 +113,6 @@ def get_sample_coursetables():
     }
 
     return jsonify(sample_data[request.path[request.path.rfind("/") + 1:]])
-
-
-@route('/ap/users/score/<int:year>/<int:semester>')
-@auth.login_required
-def get_score(year, semester):
-    return "Construct laaaaaa"
 
 
 @route('/ap/semester')
