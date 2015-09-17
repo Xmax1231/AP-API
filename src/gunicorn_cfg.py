@@ -5,6 +5,8 @@ reload = True
 bind = "0.0.0.0:14769"
 
 # SSL
+#certfile = "/etc/nginx/conf/certs/domain.crt"
+#keyfile = "/etc/nginx/conf/certs/domain.key"
 
 # Performance
 workers = 3
